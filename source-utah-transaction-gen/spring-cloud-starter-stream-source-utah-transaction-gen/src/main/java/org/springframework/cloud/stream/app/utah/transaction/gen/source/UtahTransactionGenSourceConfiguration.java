@@ -130,6 +130,7 @@ public class UtahTransactionGenSourceConfiguration {
 				lineItems.add(li);
 				
 				pid.getStoreInventory().setProductQty(currentQty - randomQty);
+				pid.refreshTimestamp();
 				storeProducts.put(product, pid);
 				redisOps.opsForHash().put(INVENTORY_CACHE_KEY, storeID, storeProducts);
 				
