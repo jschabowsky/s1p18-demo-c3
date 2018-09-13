@@ -22,7 +22,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.stream.annotation.EnableBinding;
 
 import org.springframework.cloud.stream.annotation.Output;
-import org.springframework.cloud.stream.binding.BinderAwareChannelResolver;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -31,7 +30,6 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.messaging.support.MessageBuilder;
 
 import com.solace.demo.utahdabc.datamodel.ProductInventoryData;
 import com.solace.demo.utahdabc.datamodel.StoreTransaction;
@@ -68,9 +66,6 @@ public class UtahTransactionGenSourceConfiguration {
 	
 	@Autowired
 	private RedisOperations<String, Object> redisOps;
-
-	@Autowired
-    private BinderAwareChannelResolver resolver;
 
 	@StreamEmitter
 	@Output(Source.OUTPUT)
@@ -133,9 +128,6 @@ public class UtahTransactionGenSourceConfiguration {
 				pid.refreshTimestamp();
 				storeProducts.put(product, pid);
 				redisOps.opsForHash().put(INVENTORY_CACHE_KEY, storeID, storeProducts);
-				
-				String target = properties.getPublishInventoryTopicPrefix() + storeID;
-				resolver.resolveDestination(target).send(MessageBuilder.withPayload(pid).build());
 			}
 		}
 		st.setProductsPurchased(lineItems.toArray(new PurchaseLineItem[0]));		
