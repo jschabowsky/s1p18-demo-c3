@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.activity.InvalidActivityException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,7 +51,11 @@ public class UtahTransactionGenSourceConfiguration {
 	private static final Log LOG = LogFactory.getLog(UtahTransactionGenSourceConfiguration.class);	
 	private static final Random _random = new Random();
     private static final String INVENTORY_CACHE_KEY = "UT_INVENTORY";
-
+    
+    private static final int MAX_TXGEN_RETRY_COUNT = 5;
+    
+    private int txGenRetryCount = 0;
+    
 	@Bean
 	public RedisOperations<String, Object> redisTemplate(RedisConnectionFactory rcf) {
 		final RedisTemplate<String, Object> template =  new RedisTemplate<String, Object>();
@@ -124,17 +130,27 @@ public class UtahTransactionGenSourceConfiguration {
 				transactionTotal += li.getTotalLineAmount();
 				lineItems.add(li);
 				
+				/* Currently assuming unlimited inventory - uncomment the following to update inventory in real-time
 				pid.getStoreInventory().setProductQty(currentQty - randomQty);
-				pid.refreshTimestamp();
 				storeProducts.put(product, pid);
 				redisOps.opsForHash().put(INVENTORY_CACHE_KEY, storeID, storeProducts);
+				*/
+				pid.refreshTimestamp();	// Ensure Kibana gets updated timeseries
 			}
 		}
 		st.setProductsPurchased(lineItems.toArray(new PurchaseLineItem[0]));		
 		st.setTotalTransactionAmount(transactionTotal);
 
-		LOG.info(st);
-		
+		if (st.getProductsPurchased().length > 0) {
+			LOG.info(st);
+		} else if (txGenRetryCount++ < MAX_TXGEN_RETRY_COUNT) {
+			st = generateRandomTransaction(stores);
+		} else {
+			String err = "Unable to generate new random transaction within retry limit."; 
+			LOG.error(err);
+			throw new IllegalStateException(err);
+		}
+
 		return st;
 	}
 }

@@ -14,13 +14,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
-
+import org.springframework.messaging.Message;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.receivesPayloadThat;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -38,13 +41,16 @@ public abstract class UtahTransactionGenSourceIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 
-	@SpringBootTest("utah.transaction.gen.emitIntervalSec=10")
+	@SpringBootTest("utah.transaction.gen.emitIntervalSec=2")
 	public static class EmitIntervalTest extends UtahTransactionGenSourceIntegrationTests {		
-		private static final String RESULT_SUBSTRING = "{\"transactionID\":0,\"creationTimestamp\":\"";
+		private static final String RESULT_SUBSTRING = "{\"transactionID\":";
 
 		@Test
 		public void emitIntervalTest() throws InterruptedException {			
-			assertThat(collector.forChannel(channel.output()), receivesPayloadThat(startsWith(RESULT_SUBSTRING)));
+			Message<?> msg = collector.forChannel(channel.output()).poll(30, TimeUnit.SECONDS);
+			Object payload = (msg != null) ? msg.getPayload() : null; 
+			
+			assertTrue(startsWith(RESULT_SUBSTRING).matches(payload));
 		}
 	}
 
