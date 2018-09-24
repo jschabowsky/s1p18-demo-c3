@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import javax.activity.InvalidActivityException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
