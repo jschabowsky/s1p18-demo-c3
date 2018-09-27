@@ -8,7 +8,7 @@ package org.springframework.cloud.stream.app.utah.transaction.geo.processor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for the inventory geocoder processor.
+ * Configuration properties for UtahTransactionGeoProcessorConfiguration
  *
  * @author Solace Corp.
  */
@@ -16,6 +16,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class UtahTransactionGeoProcessorProperties {	
 	public static final boolean DEFAULT_LOG_CACHE_HITS = true;
 	
+	/**
+	 * Flag to enable logging of cache hits for geocoded addresses
+	 */
 	private boolean logCacheHits = DEFAULT_LOG_CACHE_HITS;
 
 	public boolean isLogCacheHits() {

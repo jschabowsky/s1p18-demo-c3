@@ -39,7 +39,7 @@ import reactor.core.publisher.Flux;
 import org.springframework.cloud.stream.reactive.StreamEmitter;
 
 /**
- * SCS source - lookup.  Converts an address to lat/long, or the reverse.
+ * See README.adoc 
  *
  * @author Solace Corp
  */
@@ -49,7 +49,6 @@ public class UtahTransactionGenSourceConfiguration {
 	private static final Log LOG = LogFactory.getLog(UtahTransactionGenSourceConfiguration.class);	
 	private static final Random _random = new Random();
     private static final String INVENTORY_CACHE_KEY = "UT_INVENTORY";
-    
     private static final int MAX_TXGEN_RETRY_COUNT = 5;
     
     private int txGenRetryCount = 0;
