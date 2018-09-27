@@ -1,29 +1,42 @@
 //tag::ref-doc[]
+
 = source-utah-transaction-gen
 
+The `utah-transaction-gen` source generates random transactions to simulate purchases of whiskey products across DABC liquor stores in Utah.
 
 == Input
 
+* N/A
+
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* N/A
 
 == Output
 
+* Randomly generated `com.solace.demo.utahdabc.datamodel.StoreTransaction` object.
+
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* N/A
 
 == Options
 
+The **$$utah-transaction-gen$$** $$source$$ has the following options:
+
+//tag::configuration-properties[]
+$$utah.transaction.gen.emit-interval-sec$$:: $$Interval (in sec) at which to emit a new, randomly generated transaction$$ *($$Integer$$, default: `$$1$$`)*
+$$utah.transaction.gen.max-purchase-item-count$$:: $$Max number of distinct purchase items in a transaction (randomly generated, count can be lower)$$ *($$Integer$$, default: `$$5$$`)*
+$$utah.transaction.gen.max-quantity-per-item$$:: $$Max quantity for a given item (randomly generated, quantity can be lower)$$ *($$Integer$$, default: `$$3$$`)*
+//end::configuration-properties[]
 
 == Build
 
@@ -40,7 +53,7 @@ $ ./mvnw clean package
 == Examples
 
 ```
-
+java -jar utah-transaction-gen-source-solace-0.0.1.BUILD-SNAPSHOT.jar --solace.java.host=192.168.65.3 --solace.java.msgVpn=default --solace.java.clientUsername=default --solace.java.clientPassword=default --spring.cloud.stream.bindings.output.destination=utah/transaction/gen --solace.java.apiProperties.generate_sender_id=true --solace.java.apiProperties.generate_sequence_numbers=true --solace.java.apiProperties.generate_send_timestamps=true --utah.transaction.gen.emitIntervalSec=10 --utah.transaction.gen.maxPurchaseItemCount=10 --utah.transaction.gen.maxQuantityPerItem=5
 ```
 
 //end::ref-doc[]
